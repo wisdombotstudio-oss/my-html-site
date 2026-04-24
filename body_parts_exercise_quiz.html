@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Body Parts Exercise Quiz</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e0f7ff, #fff4d6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .quiz-box {
+      width: 100%;
+      max-width: 900px;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      border: 5px solid #4fc3f7;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .header h1 {
+      color: #0d47a1;
+      font-size: 34px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: #333;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .question {
+      background: #f5fbff;
+      border: 2px solid #b3e5fc;
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .question h3 {
+      font-size: 21px;
+      color: #222;
+      margin-bottom: 14px;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+    }
+
+    .option {
+      border: none;
+      background: #fff;
+      border: 2px solid #90caf9;
+      padding: 13px 15px;
+      border-radius: 14px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: 0.3s;
+      text-align: left;
+    }
+
+    .option:hover {
+      background: #e3f2fd;
+      transform: scale(1.03);
+    }
+
+    .option.correct {
+      background: #c8f7c5;
+      border-color: #2e7d32;
+      color: #1b5e20;
+      font-weight: bold;
+    }
+
+    .option.wrong {
+      background: #ffcdd2;
+      border-color: #c62828;
+      color: #b71c1c;
+      font-weight: bold;
+    }
+
+    .result {
+      margin-top: 25px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #0d47a1;
+    }
+
+    .buttons {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .reset-btn {
+      background: #ff9800;
+      color: white;
+      border: none;
+      padding: 14px 30px;
+      border-radius: 30px;
+      font-size: 18px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .reset-btn:hover {
+      background: #f57c00;
+    }
+
+    @media (max-width: 600px) {
+      .quiz-box {
+        padding: 20px;
+      }
+
+      .header h1 {
+        font-size: 27px;
+      }
+
+      .header p,
+      .question h3,
+      .option {
+        font-size: 17px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-box">
+    <div class="header">
+      <h1>Body Parts Exercise</h1>
+      <p>Tick (✓) the correct option.</p>
+    </div>
+
+    <div id="quiz"></div>
+
+    <div class="result" id="result">Score: 0 / 5</div>
+
+    <div class="buttons">
+      <button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "1. Which body part helps us to hear sound?",
+        options: ["i. Nose", "ii. Ears", "iii. Tongue"],
+        answer: "ii. Ears"
+      },
+      {
+        question: "2. What is the function of heart?",
+        options: ["i. To pump blood", "ii. To digest food", "iii. For breathing"],
+        answer: "i. To pump blood"
+      },
+      {
+        question: "3. Which part of our body helps us to think?",
+        options: ["i. Brain", "ii. Heart", "iii. Stomach"],
+        answer: "i. Brain"
+      },
+      {
+        question: "4. Which body part provides shape to the body?",
+        options: ["i. Heart", "ii. Bones", "iii. Lungs"],
+        answer: "ii. Bones"
+      },
+      {
+        question: "5. The body parts that can be seen are known as",
+        options: ["i. External Organs", "ii. Internal Organs", "iii. Receptors"],
+        answer: "i. External Organs"
+      }
+    ];
+
+    let score = 0;
+    let answered = 0;
+
+    function loadQuiz() {
+      const quiz = document.getElementById("quiz");
+      quiz.innerHTML = "";
+
+      questions.forEach((q, index) => {
+        const questionDiv = document.createElement("div");
+        questionDiv.className = "question";
+
+        const questionTitle = document.createElement("h3");
+        questionTitle.innerText = q.question;
+        questionDiv.appendChild(questionTitle);
+
+        const optionsDiv = document.createElement("div");
+        optionsDiv.className = "options";
+
+        q.options.forEach(optionText => {
+          const button = document.createElement("button");
+          button.className = "option";
+          button.innerText = optionText;
+          button.onclick = () => checkAnswer(button, optionText, q.answer, optionsDiv);
+          optionsDiv.appendChild(button);
+        });
+
+        questionDiv.appendChild(optionsDiv);
+        quiz.appendChild(questionDiv);
+      });
+    }
+
+    function checkAnswer(button, selected, correctAnswer, optionsDiv) {
+      const optionButtons = optionsDiv.querySelectorAll(".option");
+
+      optionButtons.forEach(btn => {
+        btn.disabled = true;
+        if (btn.innerText === correctAnswer) {
+          btn.classList.add("correct");
+        }
+      });
+
+      if (selected === correctAnswer) {
+        score++;
+      } else {
+        button.classList.add("wrong");
+      }
+
+      answered++;
+      document.getElementById("result").innerText = `Score: ${score} / ${questions.length}`;
+
+      if (answered === questions.length) {
+        setTimeout(() => {
+          alert(`Great Job! Your final score is ${score} out of ${questions.length}`);
+        }, 300);
+      }
+    }
+
+    function resetQuiz() {
+      score = 0;
+      answered = 0;
+      document.getElementById("result").innerText = "Score: 0 / 5";
+      loadQuiz();
+    }
+
+    loadQuiz();
+  </script>
+</body>
+</html>
